@@ -1,69 +1,56 @@
 import turtle
 
-
-def perform_switch_case(state, t, turn):
-    x = round(t.position()[0] / 10)
-    y = round(t.position()[1] / 10)
-    num_turns = 5
-
-    if state == "LEFT":
-        t.forward(10)  # Перемещение
-
-        if x <= -turn:
-            state = "DOWN"
-            t.setheading(90)  # Разворот вверх
-            t.setheading(270)  # Разворот вниз
-            return state, turn
-        return state, turn
-    if state == "INIT":
-
-        if True:
-            state = "UP"
-            return state, turn
-        return state, turn
+def perform_switch_case(state, t, step, up_count):
     if state == "UP":
-        t.forward(10)  # Перемещение
+        up_count += 1
+        t.setheading(90)
+        t.forward(50)
 
-        if y >= turn:
-            state = "LEFT"
-            t.setheading(180)  # Разворот влево
-            return state, turn
-        if turn > num_turns:
-            state = "STOP"
-            return state, turn
-        return state, turn
-    if state == "DOWN":
-        t.forward(10)  # Перемещение
+        if up_count == 3:
+            return "STOP", step, up_count
 
-        if y <= -turn:
-            state = "RIGHT"
-            t.setheading(0)  # Разворот вправо
-            return state, turn
-        return state, turn
+        return "RIGHT", step, up_count
+
     if state == "RIGHT":
-        t.forward(10)  # Перемещение
+        t.setheading(0)
+        t.forward(50)
 
-        if x >= turn:
+        if step == 1:
+            state = "DOWN"
+        elif step == 2:
             state = "UP"
-            t.setheading(90)  # Разворот вверх
-            turn = turn + 1  # Начало нового витка
-            return state, turn
-        return state, turn
-    return state, turn
+        elif step == 3:
+            state = "DOWN"
+        elif step == 4:
+            state = "UP"
+        else:
+            state = "STOP"
+
+        step += 1
+        return state, step, up_count
+
+    if state == "DOWN":
+        t.setheading(270)
+        t.forward(50)
+        return "RIGHT", step, up_count
+
+    return state, step, up_count
 
 
 def draw():
-    start_state = "INIT"
-    end_state = "STOP"
-    curr_state = start_state
     t = turtle.Turtle()
-    t.speed(0)
-    turn = 1
+    t.speed(3)
+    t.width(3)
 
-    while curr_state != end_state:
-        curr_state, turn = perform_switch_case(curr_state, t, turn)
+    curr_state = "UP"
+    step = 1
+    up_count = 0
+
+    while curr_state != "STOP":
+        curr_state, step, up_count = perform_switch_case(curr_state, t, step, up_count)
+
     turtle.done()
 
 
-if  __name__ == "__main__":
+if __name__ == "__main__":
     draw()
